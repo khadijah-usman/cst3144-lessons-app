@@ -76,8 +76,12 @@ createApp({
       const namePattern = /^[A-Za-z ]+$/
       const phonePattern = /^[0-9]+$/
       return namePattern.test(this.name) && phonePattern.test(this.phone)
+    },
+    cartTotal() {
+      return this.cart.reduce((total, item) => total + item.price, 0);
     }
   },
+  
   methods: {
     addToCart(lesson) {
       if (lesson.spaces > 0) {
