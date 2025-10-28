@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>CST3144 Lessons App</title>
+        <link rel="stylesheet" href="style.css" />
+      
+        
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+        />
+      
+        <!-- Vue 3 -->
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+      </head>
+      
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="header">
+        <h1 class="logo" @click="goHome" style="cursor:pointer;">
+          <i class="fa-solid fa-graduation-cap"></i> LessonHub
+        </h1>
+      
+        <div class="controls">
+          <input v-model="searchTerm" class="search" placeholder="Search lessons..." />
+      
+          <div class="sort-group">
+            <div class="custom-select">
+              <select v-model="sortBy">
+                <option value="subject">Subject</option>
+                <option value="location">Location</option>
+                <option value="price">Price</option>
+                <option value="spaces">Spaces</option>
+              </select>
+              <i class="fa-solid fa-angle-down"></i>
+            </div>
+          
+            <div class="custom-select">
+              <select v-model="sortOrder">
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>
+              </select>
+              <i class="fa-solid fa-angle-down"></i>
+            </div>
+          </div>
+      
+          <button class="cart-btn" @click="showCart = !showCart">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span>Cart</span>
+            <span v-if="cart.length" class="cart-badge">{{ cart.length }}</span>
+          </button>
+          
+          
+        </div>
+      </header>
+      
+
+    <!-- Main Content -->
+    <main>
+      <!-- Lesson List -->
+      <section v-if="!showCart" class="lesson-section">
+        <h2>Available Lessons</h2>
+        <div class="lesson-grid">
+          <div class="lesson-card" v-for="lesson in sortedAndFilteredLessons" :key="lesson.id">
+            <img :src="lesson.image" alt="Lesson image" class="lesson-img" />
+            <div class="lesson-info">
+              <h3><i :class="lesson.icon"></i> {{ lesson.subject }}</h3>
+              <p><i class="fa-solid fa-location-dot"></i> {{ lesson.location }}</p>
+              <p>£{{ lesson.price }}</p>
+
+              <p><i class="fa-solid fa-users"></i> Spaces: {{ lesson.spaces }}</p>
+            </div>
+            <button @click="addToCart(lesson)" :disabled="lesson.spaces === 0" class="add-btn">
+              <i class="fa-solid fa-cart-plus"></i>
+              {{ lesson.spaces > 0 ? 'Add to Cart' : 'Full' }}
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Cart Section -->
+      <section v-else class="cart-section">
+        <h2>Your Cart</h2>
+        <div v-if="cart.length === 0" class="empty-cart">
+          <p>Your cart is empty.</p>
+        </div>
+        <button class="back-btn" @click="goHome">
+            <i class="fa-solid fa-arrow-left"></i> Back to Home
+          </button>
+          
+        <div v-else>
+          <ul class="cart-list">
+            <li v-for="(item, index) in cart" :key="index" class="cart-item">
+              <span>{{ item.subject }} - {{ item.location }} (£{{ item.price }})</span>
+              <button class="remove-btn" @click="removeFromCart(index)">
+                <i class="fa-solid fa-trash"></i> Remove
+              </button>
+            </li>
+          </ul>
+
+          <div class="checkout-box">
+            <h3>Checkout</h3>
+            <form @submit.prevent="checkout">
+              <input v-model="name" placeholder="Name (letters only)" />
+              <input v-model="phone" placeholder="Phone (numbers only)" />
+              <button :disabled="!isFormValid" class="checkout-btn">
+                <i class="fa-solid fa-paper-plane"></i> Submit Order
+              </button>
+            </form>
+            <p v-if="orderConfirmed" class="success">Order Confirmed Successfully!</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
